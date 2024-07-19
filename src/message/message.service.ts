@@ -75,6 +75,9 @@ export class MessageService {
           },
         },
       },
+      orderBy: {
+        id: 'asc',
+      },
     });
 
     // insert to message consumption
