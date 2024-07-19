@@ -10,7 +10,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     return await this.prisma.user.create({
       data: {
-        userId: createUserDto.userId,
+        username: createUserDto.username,
         name: createUserDto.name,
         keyPackage: createUserDto.keyPackage as Prisma.JsonObject,
       },
@@ -21,9 +21,9 @@ export class UserService {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(userId: string) {
+  async findOne(username: string) {
     const user = await this.prisma.user.findUnique({
-      where: { userId: userId },
+      where: { username: username },
     });
     if (!user) {
       throw new NotFoundException('User not found');

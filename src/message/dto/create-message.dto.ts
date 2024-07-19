@@ -1,12 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MessageType } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsObject, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  userId: string;
+  username: string;
 
   @IsEnum(MessageType)
   @ApiProperty()
@@ -20,4 +26,12 @@ export class CreateMessageDto {
   @IsObject()
   @ApiProperty()
   payload: object;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  destinationUsername?: string;
 }
