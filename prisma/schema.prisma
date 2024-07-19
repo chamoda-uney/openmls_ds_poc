@@ -34,7 +34,8 @@ model Message {
   createdAt          DateTime             @default(now())
   createdUser        User                 @relation(fields: [userId], references: [id])
   userId             Int
-  messagetype        MessageType
+  messageType        MessageType
+  payload            Json                 @db.Json
   groupId            String
   MessageConsumption MessageConsumption[]
 }
