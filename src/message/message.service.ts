@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { PrismaService } from 'src/prisma.service';
 import { UserService } from 'src/user/user.service';
-import { MessageType } from '@prisma/client';
+import { MessageType, Prisma } from '@prisma/client';
 
 @Injectable()
 export class MessageService {
@@ -10,6 +10,11 @@ export class MessageService {
     private prisma: PrismaService,
     private user: UserService,
   ) {}
+
+  messageIncludes = Prisma.validator<Prisma.MessageInclude>()({
+    createdUser: true,
+    destinationUser: true,
+  });
 
   async create(createMessageDto: CreateMessageDto) {
     const createdUser = await this.user.findOne(createMessageDto.username);
@@ -43,10 +48,7 @@ export class MessageService {
         groupId: createMessageDto.groupId,
         payload: createMessageDto.payload,
       },
-      include: {
-        createdUser: true,
-        destinationUser: true,
-      },
+      include: this.messageIncludes,
     });
   }
 
@@ -63,9 +65,7 @@ export class MessageService {
     });
 
     const messages = await this.prisma.message.findMany({
-      include: {
-        createdUser: true,
-      },
+      include: this.messageIncludes,
       where: {
         NOT: {
           id: {
