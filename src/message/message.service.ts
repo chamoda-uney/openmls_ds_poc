@@ -3,12 +3,14 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { PrismaService } from 'src/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { MessageType, Prisma } from '@prisma/client';
+import { SocketGateway } from 'src/socket/socket.gateway';
 
 @Injectable()
 export class MessageService {
   constructor(
     private prisma: PrismaService,
     private user: UserService,
+    private socket: SocketGateway,
   ) {}
 
   messageIncludes = Prisma.validator<Prisma.MessageInclude>()({
@@ -30,7 +32,7 @@ export class MessageService {
       );
     }
 
-    return await this.prisma.message.create({
+    const message = await this.prisma.message.create({
       data: {
         messageType: createMessageDto.messageType,
         createdUser: {
@@ -50,6 +52,15 @@ export class MessageService {
       },
       include: this.messageIncludes,
     });
+
+    this.socket.broadcastMessage({
+      createdUsername: createdUser.username,
+      destinationUsername: destinationUser?.username,
+      messageType: createMessageDto.messageType,
+      groupId: createMessageDto.groupId,
+    });
+
+    return message;
   }
 
   async findAll(username: string) {
