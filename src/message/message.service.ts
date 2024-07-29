@@ -21,6 +21,8 @@ export class MessageService {
   async create(createMessageDto: CreateMessageDto) {
     const createdUser = await this.user.findOne(createMessageDto.username);
 
+    console.log(createMessageDto);
+
     let destinationUser = null;
 
     if (createMessageDto.messageType === MessageType.WelcomeMessage) {
